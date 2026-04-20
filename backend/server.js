@@ -9,7 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect("mongodb://127.0.0.1:27017/dashboard")
+// Use environment variable for MongoDB URI (required for cloud deployment)
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/dashboard";
+
+mongoose.connect(MONGODB_URI)
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log(err));
 
@@ -19,10 +22,6 @@ app.get("/", (req, res) => {
 
 app.post("/upload", upload.single("file"), async (req, res) => {
   res.send("File uploaded successfully");
-});
-
-app.listen(5000, () => {
-  console.log("Server running on port 5000");
 });
 
 // Add data
@@ -36,4 +35,9 @@ app.post("/add", async (req, res) => {
 app.get("/data", async (req, res) => {
   const data = await Data.find();
   res.json(data);
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
